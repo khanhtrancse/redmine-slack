@@ -9,29 +9,37 @@ class SlackListener < Redmine::Hook::Listener
 
 		return unless channel and url
 		return if issue.is_private?
+		return if issue.status.to_s == 'Todo'
 
-		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* đã thêm <#{object_url issue}|#{escape issue}>#{mentions issue.description}"
+		action_msg = "đã cập nhật"
+		if issue.status && issue.status.to_s == 'Doing'
+			action_msg = "đang làm"
+		end
+		if issue.status && issue.status.to_s == 'Done'
+			action_msg = "đã hoàn thành"
+		end
+		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>#{mentions issue.description}"
 
 		attachment = {}
 		attachment[:text] = escape issue.description if issue.description
-		attachment[:fields] = []
-		attachment[:fields] << {
-			:title => I18n.t("field_status"),
-			:value => escape(issue.status.to_s),
-			:short => true
-		} if issue.status.to_s != 'Todo'
+		# attachment[:fields] = []
+		# attachment[:fields] << {
+		# 	:title => I18n.t("field_status"),
+		# 	:value => escape(issue.status.to_s),
+		# 	:short => true
+		# } if issue.status.to_s != 'Todo'
 
-		attachment[:fields] << {
-			:title => I18n.t("field_assigned_to"),
-			:value => escape(issue.assigned_to.to_s),
-			:short => true
-		} if issue.assigned_to.to_s
+		# attachment[:fields] << {
+		# 	:title => I18n.t("field_assigned_to"),
+		# 	:value => escape(issue.assigned_to.to_s),
+		# 	:short => true
+		# } if issue.assigned_to.to_s  && issue.assigned_to.to_s != ""
 
-		attachment[:fields] << {
-			:title => I18n.t("field_watcher"),
-			:value => escape(issue.watcher_users.join(', ')),
-			:short => true
-		} if Setting.plugin_redmine_slack['display_watchers'] == 'yes'
+		# attachment[:fields] << {
+		# 	:title => I18n.t("field_watcher"),
+		# 	:value => escape(issue.watcher_users.join(', ')),
+		# 	:short => true
+		# } if Setting.plugin_redmine_slack['display_watchers'] == 'yes'
 
 		speak msg, channel, attachment, url
 	end
