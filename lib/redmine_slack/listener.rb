@@ -10,23 +10,22 @@ class SlackListener < Redmine::Hook::Listener
 		return unless channel and url
 		return if issue.is_private?
 
-		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* đã tạo <#{object_url issue}|#{escape issue}>#{mentions issue.description}"
+		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* đã thêm <#{object_url issue}|#{escape issue}>#{mentions issue.description}"
 
 		attachment = {}
 		attachment[:text] = escape issue.description if issue.description
-		attachment[:fields] = [{
+		attachment[:fields] = []
+		attachment[:fields] << {
 			:title => I18n.t("field_status"),
 			:value => escape(issue.status.to_s),
 			:short => true
-		}, {
-			:title => I18n.t("field_priority"),
-			:value => escape(issue.priority.to_s),
-			:short => true
-		}, {
+		} if issue.status.to_s != 'Todo'
+
+		attachment[:fields] << {
 			:title => I18n.t("field_assigned_to"),
 			:value => escape(issue.assigned_to.to_s),
 			:short => true
-		}]
+		} if issue.assigned_to.to_s
 
 		attachment[:fields] << {
 			:title => I18n.t("field_watcher"),
@@ -48,11 +47,17 @@ class SlackListener < Redmine::Hook::Listener
 		return if issue.is_private?
 		return if journal.private_notes?
 
-		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* đã cập nhật <#{object_url issue}|#{escape issue}>#{mentions journal.notes}"
+		action_msg = "đã cập nhật"
+		if issue.status.to_s == 'Doing'
+			action_msg = "đang làm"
+		if issue.status.to_s == 'Done'
+			action_msg = "đã hoàn thành"
+
+		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* #{action_msg} <#{object_url issue}|#{escape issue}>#{mentions journal.notes}"
 
 		attachment = {}
 		attachment[:text] = escape journal.notes if journal.notes
-		attachment[:fields] = journal.details.map { |d| detail_to_field d }
+#		attachment[:fields] = journal.details.map { |d| detail_to_field d }
 
 		speak msg, channel, attachment, url
 	end
@@ -68,7 +73,12 @@ class SlackListener < Redmine::Hook::Listener
 		return unless channel and url and issue.save
 		return if issue.is_private?
 
-		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* đã cập nhật <#{object_url issue}|#{escape issue}>"
+		action_msg = "đã cập nhật"
+		if issue.status.to_s == 'Doing'
+			action_msg = "đang làm"
+		if issue.status.to_s == 'Done'
+			action_msg = "đã hoàn thành"
+		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* #{action_msg} <#{object_url issue}|#{escape issue}>"
 
 		repository = changeset.repository
 
@@ -99,7 +109,7 @@ class SlackListener < Redmine::Hook::Listener
 
 		attachment = {}
 		attachment[:text] = ll(Setting.default_language, :text_status_changed_by_changeset, "<#{revision_url}|#{escape changeset.comments}>")
-		attachment[:fields] = journal.details.map { |d| detail_to_field d }
+#		attachment[:fields] = journal.details.map { |d| detail_to_field d }
 
 		speak msg, channel, attachment, url
 	end
