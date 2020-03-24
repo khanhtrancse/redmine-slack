@@ -18,7 +18,7 @@ class SlackListener < Redmine::Hook::Listener
 		if issue.status && issue.status.to_s == 'Done'
 			action_msg = "đã hoàn thành"
 		end
-		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>#{mentions issue.description}"
+		msg = "*#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>#{mentions issue.description} ---- *[#{escape issue.project}]*"
 
 		attachment = {}
 		attachment[:text] = escape issue.description if issue.description
@@ -63,7 +63,7 @@ class SlackListener < Redmine::Hook::Listener
 			action_msg = "đã hoàn thành"
 		end
 
-		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>#{mentions journal.notes}"
+		msg = "*#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>#{mentions journal.notes}  ---- *[#{escape issue.project}]*"
 
 		attachment = {}
 		attachment[:text] = escape journal.notes if journal.notes
@@ -91,7 +91,7 @@ class SlackListener < Redmine::Hook::Listener
 			action_msg = "đã hoàn thành"
 		end
 
-		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>"
+		msg = "*#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>  ---- *[#{escape issue.project}]*"
 
 		repository = changeset.repository
 
