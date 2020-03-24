@@ -48,12 +48,12 @@ class SlackListener < Redmine::Hook::Listener
 		return if journal.private_notes?
 
 		action_msg = "đã cập nhật"
-		if issue.status.to_s == 'Doing'
+		if issue.status && issue.status.to_s == 'Doing'
 			action_msg = "đang làm"
-		if issue.status.to_s == 'Done'
+		if issue.status && issue.status.to_s == 'Done'
 			action_msg = "đã hoàn thành"
 
-		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* #{action_msg} <#{object_url issue}|#{escape issue}>#{mentions journal.notes}"
+		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>#{mentions journal.notes}"
 
 		attachment = {}
 		attachment[:text] = escape journal.notes if journal.notes
@@ -74,11 +74,12 @@ class SlackListener < Redmine::Hook::Listener
 		return if issue.is_private?
 
 		action_msg = "đã cập nhật"
-		if issue.status.to_s == 'Doing'
+		if issue.status && issue.status.to_s == 'Doing'
 			action_msg = "đang làm"
-		if issue.status.to_s == 'Done'
+		if issue.status && issue.status.to_s == 'Done'
 			action_msg = "đã hoàn thành"
-		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* #{action_msg} <#{object_url issue}|#{escape issue}>"
+
+		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>"
 
 		repository = changeset.repository
 
