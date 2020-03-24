@@ -50,8 +50,10 @@ class SlackListener < Redmine::Hook::Listener
 		action_msg = "đã cập nhật"
 		if issue.status && issue.status.to_s == 'Doing'
 			action_msg = "đang làm"
+		end
 		if issue.status && issue.status.to_s == 'Done'
 			action_msg = "đã hoàn thành"
+		end
 
 		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>#{mentions journal.notes}"
 
@@ -76,8 +78,10 @@ class SlackListener < Redmine::Hook::Listener
 		action_msg = "đã cập nhật"
 		if issue.status && issue.status.to_s == 'Doing'
 			action_msg = "đang làm"
+		end
 		if issue.status && issue.status.to_s == 'Done'
 			action_msg = "đã hoàn thành"
+		end
 
 		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>"
 
