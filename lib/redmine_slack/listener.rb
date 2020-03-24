@@ -10,7 +10,7 @@ class SlackListener < Redmine::Hook::Listener
 		return unless channel and url
 		return if issue.is_private?
 
-		msg = "[#{escape issue.project}] #{escape issue.author} created <#{object_url issue}|#{escape issue}>#{mentions issue.description}"
+		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* đã tạo <#{object_url issue}|#{escape issue}>#{mentions issue.description}"
 
 		attachment = {}
 		attachment[:text] = escape issue.description if issue.description
@@ -48,7 +48,7 @@ class SlackListener < Redmine::Hook::Listener
 		return if issue.is_private?
 		return if journal.private_notes?
 
-		msg = "[#{escape issue.project}] #{escape journal.user.to_s} updated <#{object_url issue}|#{escape issue}>#{mentions journal.notes}"
+		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* đã cập nhật <#{object_url issue}|#{escape issue}>#{mentions journal.notes}"
 
 		attachment = {}
 		attachment[:text] = escape journal.notes if journal.notes
@@ -68,7 +68,7 @@ class SlackListener < Redmine::Hook::Listener
 		return unless channel and url and issue.save
 		return if issue.is_private?
 
-		msg = "[#{escape issue.project}] #{escape journal.user.to_s} updated <#{object_url issue}|#{escape issue}>"
+		msg = "*[#{escape issue.project}]* -- *#{escape issue.author}* đã cập nhật <#{object_url issue}|#{escape issue}>"
 
 		repository = changeset.repository
 
@@ -113,7 +113,7 @@ class SlackListener < Redmine::Hook::Listener
 		user = page.content.author
 		project_url = "<#{object_url project}|#{escape project}>"
 		page_url = "<#{object_url page}|#{page.title}>"
-		comment = "[#{project_url}] #{page_url} updated by *#{user}*"
+		comment = "[#{project_url}] #{page_url} cập nhật bởi *#{user}*"
 		if page.content.version > 1
 			comment << " [<#{object_url page}/diff?version=#{page.content.version}|difference>]"
 		end
