@@ -56,6 +56,9 @@ class SlackListener < Redmine::Hook::Listener
 		return if journal.private_notes?
 
 		action_msg = "đã cập nhật"
+		if issue.status && issue.status.to_s == 'ToDo'
+			return
+		end
 		if issue.status && issue.status.to_s == 'Doing'
 			action_msg = "đang làm"
 		end
