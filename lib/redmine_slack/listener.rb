@@ -9,15 +9,19 @@ class SlackListener < Redmine::Hook::Listener
 
 		return unless channel and url
 		return if issue.is_private?
-		return if issue.status.to_s == 'Todo'
 
+		allowNoti = false
 		action_msg = "đã cập nhật"
 		if issue.status && issue.status.to_s == 'Doing'
 			action_msg = "đang làm"
+			allowNoti = true
 		end
 		if issue.status && issue.status.to_s == 'Done'
 			action_msg = "đã hoàn thành"
+			allowNoti = true
 		end
+		return unless allowNoti
+
 		msg = "*#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>#{mentions issue.description} ---- *[#{escape issue.project}]*"
 
 		attachment = {}
@@ -54,17 +58,19 @@ class SlackListener < Redmine::Hook::Listener
 		return unless channel and url and Setting.plugin_redmine_slack['post_updates'] == '1'
 		return if issue.is_private?
 		return if journal.private_notes?
-
+		
+		allowNoti = false
 		action_msg = "đã cập nhật"
-		if issue.status && issue.status.to_s == 'ToDo'
-			return
-		end
+
 		if issue.status && issue.status.to_s == 'Doing'
 			action_msg = "đang làm"
+			allowNoti = true
 		end
 		if issue.status && issue.status.to_s == 'Done'
 			action_msg = "đã hoàn thành"
+			allowNoti = true
 		end
+		return unless allowNoti
 
 		msg = "*#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>#{mentions journal.notes}  ---- *[#{escape issue.project}]*"
 
@@ -85,14 +91,18 @@ class SlackListener < Redmine::Hook::Listener
 
 		return unless channel and url and issue.save
 		return if issue.is_private?
-
+		
+		allowNoti = false
 		action_msg = "đã cập nhật"
 		if issue.status && issue.status.to_s == 'Doing'
 			action_msg = "đang làm"
+			allowNoti = true
 		end
 		if issue.status && issue.status.to_s == 'Done'
 			action_msg = "đã hoàn thành"
+			allowNoti = true
 		end
+		return unless allowNoti
 
 		msg = "*#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>  ---- *[#{escape issue.project}]*"
 
@@ -131,6 +141,7 @@ class SlackListener < Redmine::Hook::Listener
 	end
 
 	def controller_wiki_edit_after_save(context = { })
+		return
 		return unless Setting.plugin_redmine_slack['post_wiki_updates'] == '1'
 
 		project = context[:project]
