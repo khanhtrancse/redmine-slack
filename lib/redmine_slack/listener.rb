@@ -22,7 +22,11 @@ class SlackListener < Redmine::Hook::Listener
 		end
 		return unless allowNoti
 
-		msg = "*#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>#{mentions issue.description} ---- *[#{escape issue.project}]*"
+		author = issue.author
+		if(issue.assigned_to && issue.assigned_to.to_s){
+			author = issue.assigned_to.to_s
+		}
+		msg = "*#{escape author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>#{mentions issue.description} ---- *[#{escape issue.project}]*"
 
 		attachment = {}
 		attachment[:text] = escape issue.description if issue.description
@@ -72,7 +76,11 @@ class SlackListener < Redmine::Hook::Listener
 		end
 		return unless allowNoti
 
-		msg = "*#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>#{mentions journal.notes}  ---- *[#{escape issue.project}]*"
+		author = issue.author
+		if(issue.assigned_to && issue.assigned_to.to_s){
+			author = issue.assigned_to.to_s
+		}
+		msg = "*#{escape author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>#{mentions journal.notes}  ---- *[#{escape issue.project}]*"
 
 		attachment = {}
 		attachment[:text] = escape journal.notes if journal.notes
@@ -104,7 +112,11 @@ class SlackListener < Redmine::Hook::Listener
 		end
 		return unless allowNoti
 
-		msg = "*#{escape issue.author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>  ---- *[#{escape issue.project}]*"
+		author = issue.author
+		if(issue.assigned_to && issue.assigned_to.to_s){
+			author = issue.assigned_to.to_s
+		}
+		msg = "*#{escape author}* #{escape action_msg} <#{object_url issue}|#{escape issue}>  ---- *[#{escape issue.project}]*"
 
 		repository = changeset.repository
 
